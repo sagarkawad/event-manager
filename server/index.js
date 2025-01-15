@@ -41,14 +41,12 @@ io.on('connection', (socket) => {
   });
 });
 
-io.listen(4000)
-
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((error) => console.error('MongoDB connection error:', error));
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

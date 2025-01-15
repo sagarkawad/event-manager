@@ -1,8 +1,8 @@
 import { Event } from '../types/database';
 
 
-const PORT = import.meta.env.VITE_PORT;
-const API_URL = `http://localhost:${PORT}/api`;
+//const PORT = import.meta.env.VITE_PORT;
+const API_URL = `https://event-manager-vxj2.onrender.com/api`;
 
 let authToken = localStorage.getItem('authToken');
 
