@@ -17,7 +17,7 @@ const io = new Server(server, {
     origin: '*', // Allow all origins for simplicity (restrict in production)
   },
 });
-const PORT = process.env.VITE_PORT || 5000;
+const PORT = process.env.VITE_PORT || 3000;
 
 // Middleware
 app.use(cors());
