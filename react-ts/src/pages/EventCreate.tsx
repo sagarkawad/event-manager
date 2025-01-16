@@ -15,9 +15,10 @@ export default function EventCreate() {
     startTime: '',
     endTime: '',
     category: '',
+    imageFile: null, // Field to hold the selected file
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
       toast.error('You must be logged in to create an event');
@@ -27,6 +28,25 @@ export default function EventCreate() {
     setLoading(true);
 
     try {
+      let imageUrl = '';
+
+      if (formData.imageFile) {
+        const formDataToUpload = new FormData();
+        formDataToUpload.append('image', formData.imageFile);
+
+        const response = await fetch('http://localhost:3000/api/cloudinary', {
+          method: 'POST',
+          body: "https://i.pinimg.com/736x/19/24/e4/1924e43a130fec0f151f60db0f793ccc.jpg",
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to upload image');
+        }
+
+        const data = await response.json();
+        imageUrl = data.img; // Get the returned image URL
+      }
+
       await createEvent({
         title: formData.title,
         description: formData.description,
@@ -34,8 +54,9 @@ export default function EventCreate() {
         startTime: formData.startTime,
         endTime: formData.endTime,
         category: formData.category,
+        image: imageUrl, // Pass the uploaded image URL
       });
-      
+
       toast.success('Event created successfully!');
       navigate('/');
     } catch (error) {
@@ -45,9 +66,16 @@ export default function EventCreate() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({ ...prev, imageFile: file }));
+    }
   };
 
   return (
@@ -143,6 +171,20 @@ export default function EventCreate() {
           />
         </div>
 
+        <div>
+          <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+            Upload Image
+          </label>
+          <input
+            type="file"
+            id="image"
+            name="image"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="mt-1 block w-full text-gray-500"
+          />
+        </div>
+
         <button
           type="submit"
           disabled={loading}
@@ -152,4 +194,5 @@ export default function EventCreate() {
         </button>
       </form>
     </div>
-  )};
+  );
+}

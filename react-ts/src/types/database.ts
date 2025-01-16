@@ -1,6 +1,7 @@
 export interface Event {
   _id: string;
   title: string;
+  image: string;
   description: string | null;
   location: string | null;
   startTime: string;

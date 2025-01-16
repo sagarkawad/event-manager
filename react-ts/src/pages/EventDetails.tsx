@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { MapPin, Calendar, Clock, Users } from 'lucide-react';
@@ -67,13 +67,13 @@ export default function EventDetails() {
     <div className="max-w-4xl mx-auto">
       <div className="bg-white rounded-lg shadow-md p-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">{event.title}</h1>
-        
+
         <div className="space-y-4 mb-8">
           <div className="flex items-center text-gray-600">
             <Calendar className="h-5 w-5 mr-2" />
             <span>{format(new Date(event.startTime), 'PPP')}</span>
           </div>
-          
+
           <div className="flex items-center text-gray-600">
             <Clock className="h-5 w-5 mr-2" />
             <span>
@@ -95,6 +95,16 @@ export default function EventDetails() {
           </div>
         </div>
 
+        {event.image && (
+          <div className="mb-8">
+            <img
+              src={event.image}
+              alt="Event"
+              className="w-full h-auto rounded-md shadow-md"
+            />
+          </div>
+        )}
+
         <div className="prose max-w-none mb-8">
           <p className="text-gray-600">{event.description}</p>
         </div>
@@ -113,4 +123,5 @@ export default function EventDetails() {
         )}
       </div>
     </div>
-  )};
+  );
+}

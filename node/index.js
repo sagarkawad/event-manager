@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth.js';
 import eventRoutes from './routes/events.js';
+import cloudinaryRoutes from "./routes/cloudinary.js";
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
@@ -30,8 +31,12 @@ app.use((req, res, next) => {
 
 
 // Routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
+app.use("/api/cloudinary", cloudinaryRoutes);
+
+
 
 // Handle socket connections
 io.on('connection', (socket) => {

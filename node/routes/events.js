@@ -2,7 +2,10 @@ import express from 'express';
 import { auth } from '../middleware/auth.js';
 import Event from '../models/Event.js';
 
+
+
 const router = express.Router();
+
 
 router.get('/', async (req, res) => {
   try {
@@ -16,6 +19,7 @@ router.get('/', async (req, res) => {
 // Create event
 router.post('/', auth, async (req, res) => {
   try {
+    console.log("req - ", req.body)
     const event = new Event({
       ...req.body,
       createdBy: req.userId,
