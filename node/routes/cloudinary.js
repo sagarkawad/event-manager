@@ -8,10 +8,11 @@ dotenv.config();
 
 const router = express.Router();
 const uid = new ShortUniqueId({ length: 10 });
-const rndId = uid.rnd();
 
 // Create event
 router.post("/", async (req, res) => {
+  const rndId = uid.rnd();
+
   // Configuration
   cloudinary.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -19,38 +20,37 @@ router.post("/", async (req, res) => {
     api_secret: process.env.CLOUDINARY_API_SECRET, // Click 'View API Keys' above to copy your API secret
   });
 
-  try {
-    console.log(req.body.image);
-    // Upload an image
-    const uploadResult = await cloudinary.uploader.upload(req.body.image, {
+  console.log(req.body.image);
+  // Upload an image
+  const uploadResult = await cloudinary.uploader
+    .upload(req.body.image, {
       public_id: rndId,
+    })
+    .catch((error) => {
+      console.log(error);
     });
 
-    console.log(uploadResult);
+  console.log(uploadResult);
 
-    // Optimize delivery by resizing and applying auto-format and auto-quality
-    const optimizeUrl = cloudinary.url(rndId, {
-      fetch_format: "auto",
-      quality: "auto",
-    });
+  // Optimize delivery by resizing and applying auto-format and auto-quality
+  const optimizeUrl = cloudinary.url(rndId, {
+    fetch_format: "auto",
+    quality: "auto",
+  });
 
-    console.log(optimizeUrl);
+  console.log(optimizeUrl);
 
-    // Transform the image: auto-crop to square aspect_ratio
-    const autoCropUrl = cloudinary.url(rndId, {
-      crop: "auto",
-      gravity: "auto",
-      width: 500,
-      height: 500,
-    });
+  // Transform the image: auto-crop to square aspect_ratio
+  const autoCropUrl = cloudinary.url(rndId, {
+    crop: "auto",
+    gravity: "auto",
+    width: 500,
+    height: 500,
+  });
 
-    console.log(autoCropUrl);
-    // res.json({img_url: autoCropUrl})
-    res.json({ img: autoCropUrl });
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ message: e });
-  }
+  console.log(autoCropUrl);
+  // res.json({img_url: autoCropUrl})
+  res.json({ img: autoCropUrl });
 });
 
 export default router;
