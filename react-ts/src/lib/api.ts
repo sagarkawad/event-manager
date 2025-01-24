@@ -1,33 +1,32 @@
-import { Event } from '../types/database';
-
+import { Event, Image } from "../types/database";
 
 //const PORT = import.meta.env.VITE_PORT;
 const API_URL = `http://localhost:3000/api`;
 
-console.log(API_URL)
-console.log("hello")
+console.log(API_URL);
+console.log("hello");
 
-let authToken = localStorage.getItem('authToken');
+let authToken = localStorage.getItem("authToken");
 
 export const setAuthToken = (token: string | null) => {
   authToken = token;
   if (token) {
-    localStorage.setItem('authToken', token);
+    localStorage.setItem("authToken", token);
   } else {
-    localStorage.removeItem('authToken');
+    localStorage.removeItem("authToken");
   }
 };
 
 const headers = () => ({
-  'Content-Type': 'application/json',
+  "Content-Type": "application/json",
   ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
 });
 
 // Auth API
 export const login = async (email: string, password: string) => {
   const response = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
   const data = await response.json();
@@ -37,8 +36,8 @@ export const login = async (email: string, password: string) => {
 
 export const register = async (email: string, password: string) => {
   const response = await fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
   const data = await response.json();
@@ -58,7 +57,7 @@ export const getEvents = async () => {
 
 export const createEvent = async (eventData: Partial<Event>) => {
   const response = await fetch(`${API_URL}/events`, {
-    method: 'POST',
+    method: "POST",
     headers: headers(),
     body: JSON.stringify(eventData),
   });
@@ -69,10 +68,11 @@ export const createEvent = async (eventData: Partial<Event>) => {
 
 export const updateEvent = async (id: string, eventData: Partial<Event>) => {
   const response = await fetch(`${API_URL}/events/${id}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: headers(),
     body: JSON.stringify(eventData),
   });
+
   const data = await response.json();
   if (!response.ok) throw new Error(data.message);
   return data;
@@ -80,7 +80,7 @@ export const updateEvent = async (id: string, eventData: Partial<Event>) => {
 
 export const deleteEvent = async (id: string) => {
   const response = await fetch(`${API_URL}/events/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: headers(),
   });
   const data = await response.json();
@@ -90,8 +90,21 @@ export const deleteEvent = async (id: string) => {
 
 export const toggleAttendance = async (eventId: string) => {
   const response = await fetch(`${API_URL}/events/${eventId}/attend`, {
-    method: 'POST',
+    method: "POST",
     headers: headers(),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message);
+  return data;
+};
+
+// Cloudinary API
+
+export const uploadImage = async (imageData: Partial<Image>) => {
+  const response = await fetch(`${API_URL}/cloudinary`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(imageData),
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.message);

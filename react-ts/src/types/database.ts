@@ -10,8 +10,12 @@ export interface Event {
   createdBy: string;
   attendees: Array<{
     user: string;
-    status: 'attending' | 'maybe' | 'not_attending';
+    status: "attending" | "maybe" | "not_attending";
   }>;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Image {
+  image: string;
 }

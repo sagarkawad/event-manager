@@ -1,51 +1,77 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createEvent } from '../lib/api';
-import { toast } from 'react-hot-toast';
-import { useAuth } from '../contexts/AuthContext';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { createEvent, uploadImage } from "../lib/api";
+import { toast } from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
+import { Cloudinary } from "@cloudinary/url-gen";
+import { AdvancedImage, responsive, placeholder } from "@cloudinary/react";
+import CloudinaryUploadWidget from "../components/CloudinaryUploadWidget";
 
 export default function EventCreate() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    location: '',
-    startTime: '',
-    endTime: '',
-    category: '',
+    title: "",
+    description: "",
+    location: "",
+    startTime: "",
+    endTime: "",
+    category: "",
     imageFile: null, // Field to hold the selected file
   });
+  // Configuration
+  const cloudName = import.meta.env.CLOUD_NAME;
+  const uploadPreset = import.meta.env.CLOUDINARY_API_EV;
+
+  // State
+  const [publicId, setPublicId] = useState("");
+
+  // Cloudinary configuration
+  const cld = new Cloudinary({
+    cloud: {
+      cloudName,
+    },
+  });
+
+  // Upload Widget Configuration
+  const uwConfig = {
+    cloudName,
+    uploadPreset,
+    // Uncomment and modify as needed:
+    // cropping: true,
+    // showAdvancedOptions: true,
+    // sources: ['local', 'url'],
+    // multiple: false,
+    // folder: 'user_images',
+    // tags: ['users', 'profile'],
+    // context: { alt: 'user_uploaded' },
+    // clientAllowedFormats: ['images'],
+    // maxImageFileSize: 2000000,
+    // maxImageWidth: 2000,
+    // theme: 'purple',
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      toast.error('You must be logged in to create an event');
+      toast.error("You must be logged in to create an event");
       return;
     }
 
     setLoading(true);
 
     try {
-      let imageUrl = '';
-
       if (formData.imageFile) {
         const formDataToUpload = new FormData();
-        formDataToUpload.append('image', formData.imageFile);
-
-        const response = await fetch('http://localhost:3000/api/cloudinary', {
-          method: 'POST',
-          body: "https://i.pinimg.com/736x/19/24/e4/1924e43a130fec0f151f60db0f793ccc.jpg",
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to upload image');
-        }
-
-        const data = await response.json();
-        imageUrl = data.img; // Get the returned image URL
+        formDataToUpload.append("image", formData.imageFile);
+        console.log("img - ", formData.imageFile);
       }
+
+      const { img } = await uploadImage({
+        image:
+          "https://i.pinimg.com/736x/ad/0d/7f/ad0d7f09d8d50ca8c6a5222a1844473e.jpg",
+      });
 
       await createEvent({
         title: formData.title,
@@ -54,13 +80,15 @@ export default function EventCreate() {
         startTime: formData.startTime,
         endTime: formData.endTime,
         category: formData.category,
-        image: imageUrl, // Pass the uploaded image URL
+        image: img, // Pass the uploaded image URL
       });
 
-      toast.success('Event created successfully!');
-      navigate('/');
+      toast.success("Event created successfully!");
+      navigate("/");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create event');
+      toast.error(
+        error instanceof Error ? error.message : "Failed to create event",
+      );
     } finally {
       setLoading(false);
     }
@@ -83,7 +111,10 @@ export default function EventCreate() {
       <h1 className="text-3xl font-bold mb-8">Create New Event</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium text-gray-700"
+          >
             Event Title
           </label>
           <input
@@ -98,7 +129,10 @@ export default function EventCreate() {
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="description"
+            className="block text-sm font-medium text-gray-700"
+          >
             Description
           </label>
           <textarea
@@ -112,7 +146,10 @@ export default function EventCreate() {
         </div>
 
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700"
+          >
             Location
           </label>
           <input
@@ -127,7 +164,10 @@ export default function EventCreate() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="startTime"
+              className="block text-sm font-medium text-gray-700"
+            >
               Start Time
             </label>
             <input
@@ -142,7 +182,10 @@ export default function EventCreate() {
           </div>
 
           <div>
-            <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="endTime"
+              className="block text-sm font-medium text-gray-700"
+            >
               End Time
             </label>
             <input
@@ -158,7 +201,10 @@ export default function EventCreate() {
         </div>
 
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="category"
+            className="block text-sm font-medium text-gray-700"
+          >
             Category
           </label>
           <input
@@ -172,7 +218,10 @@ export default function EventCreate() {
         </div>
 
         <div>
-          <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="image"
+            className="block text-sm font-medium text-gray-700"
+          >
             Upload Image
           </label>
           <input
@@ -190,7 +239,7 @@ export default function EventCreate() {
           disabled={loading}
           className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
         >
-          {loading ? 'Creating...' : 'Create Event'}
+          {loading ? "Creating..." : "Create Event"}
         </button>
       </form>
     </div>
