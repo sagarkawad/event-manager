@@ -49,7 +49,7 @@ router.post("/", async (req, res) => {
     res.json({ img: autoCropUrl });
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: e.message });
+    res.status(500).json({ message: e });
   }
 });
 

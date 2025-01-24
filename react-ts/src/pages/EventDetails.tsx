@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { format } from 'date-fns';
-import { MapPin, Calendar, Clock, Users } from 'lucide-react';
-import { getEvents, toggleAttendance } from '../lib/api';
-import { useAuth } from '../contexts/AuthContext';
-import { toast } from 'react-hot-toast';
-import type { Event } from '../types/database';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { format } from "date-fns";
+import { MapPin, Calendar, Clock, Users } from "lucide-react";
+import { getEvents, toggleAttendance } from "../lib/api";
+import { useAuth } from "../contexts/AuthContext";
+import { toast } from "react-hot-toast";
+import type { Event } from "../types/database";
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>();
@@ -19,11 +19,11 @@ export default function EventDetails() {
 
       try {
         const events = await getEvents();
-        const foundEvent = events.find(e => e._id === id);
+        const foundEvent = events.find((e) => e._id === id);
         setEvent(foundEvent || null);
       } catch (error) {
-        console.error('Failed to fetch event:', error);
-        toast.error('Failed to load event details');
+        console.error("Failed to fetch event:", error);
+        toast.error("Failed to load event details");
       } finally {
         setLoading(false);
       }
@@ -33,21 +33,25 @@ export default function EventDetails() {
   }, [id]);
 
   const isAttending = event?.attendees.some(
-    a => user && a.user === user.id && a.status === 'attending'
+    (a) => user && a.user === user.id && a.status === "attending",
   );
 
   const handleAttendance = async () => {
     if (!user || !event) {
-      toast.error('You must be logged in to RSVP');
+      toast.error("You must be logged in to RSVP");
       return;
     }
 
     try {
       const updatedEvent = await toggleAttendance(event._id);
       setEvent(updatedEvent);
-      toast.success(isAttending ? 'You are no longer attending this event' : 'You are now attending this event');
+      toast.success(
+        isAttending
+          ? "You are no longer attending this event"
+          : "You are now attending this event",
+      );
     } catch (error) {
-      toast.error('Failed to update attendance');
+      toast.error("Failed to update attendance");
     }
   };
 
@@ -71,14 +75,14 @@ export default function EventDetails() {
         <div className="space-y-4 mb-8">
           <div className="flex items-center text-gray-600">
             <Calendar className="h-5 w-5 mr-2" />
-            <span>{format(new Date(event.startTime), 'PPP')}</span>
+            <span>{format(new Date(event.startTime), "PPP")}</span>
           </div>
 
           <div className="flex items-center text-gray-600">
             <Clock className="h-5 w-5 mr-2" />
             <span>
-              {format(new Date(event.startTime), 'p')} -{' '}
-              {format(new Date(event.endTime), 'p')}
+              {format(new Date(event.startTime), "p")} -{" "}
+              {format(new Date(event.endTime), "p")}
             </span>
           </div>
 
@@ -96,11 +100,11 @@ export default function EventDetails() {
         </div>
 
         {event.image && (
-          <div className="mb-8">
+          <div className="mb-8 flex items-center justify-center">
             <img
               src={event.image}
               alt="Event"
-              className="w-full h-auto rounded-md shadow-md"
+              className="w-fit h-auto rounded-md shadow-md"
             />
           </div>
         )}
@@ -112,13 +116,12 @@ export default function EventDetails() {
         {user && (
           <button
             onClick={handleAttendance}
-            className={`w-full md:w-auto px-6 py-2 rounded-md text-sm font-medium ${
-              isAttending
-                ? 'bg-red-600 hover:bg-red-700 text-white'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white'
-            }`}
+            className={`w-full md:w-auto px-6 py-2 rounded-md text-sm font-medium ${isAttending
+                ? "bg-red-600 hover:bg-red-700 text-white"
+                : "bg-indigo-600 hover:bg-indigo-700 text-white"
+              }`}
           >
-            {isAttending ? 'Cancel Attendance' : 'Attend Event'}
+            {isAttending ? "Cancel Attendance" : "Attend Event"}
           </button>
         )}
       </div>

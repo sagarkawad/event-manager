@@ -44,6 +44,10 @@ export default function EventCreate() {
 
     try {
       if (formData.imageFile) {
+        console.log("bs", new Blob([formData.imageFile]).size);
+        if (new Blob([formData.imageFile]).size > 51200) {
+          throw new Error("File size too large.");
+        }
         const formDataToUpload = new FormData();
         formDataToUpload.append("image", formData.imageFile);
         console.log("img - ", formData.imageFile);
@@ -66,6 +70,7 @@ export default function EventCreate() {
       toast.success("Event created successfully!");
       navigate("/");
     } catch (error) {
+      console.log("err - ", error);
       toast.error(
         error instanceof Error ? error.message : "Failed to create event",
       );
