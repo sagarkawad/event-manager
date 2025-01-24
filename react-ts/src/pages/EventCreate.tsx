@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { createEvent, uploadImage } from "../lib/api";
 import { toast } from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
-import { Cloudinary } from "@cloudinary/url-gen";
-import { AdvancedImage, responsive, placeholder } from "@cloudinary/react";
-import CloudinaryUploadWidget from "../components/CloudinaryUploadWidget";
 
 export default function EventCreate() {
   const { user } = useAuth();
@@ -20,36 +17,20 @@ export default function EventCreate() {
     category: "",
     imageFile: null, // Field to hold the selected file
   });
-  // Configuration
-  const cloudName = import.meta.env.CLOUD_NAME;
-  const uploadPreset = import.meta.env.CLOUDINARY_API_EV;
 
-  // State
-  const [publicId, setPublicId] = useState("");
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
 
-  // Cloudinary configuration
-  const cld = new Cloudinary({
-    cloud: {
-      cloudName,
-    },
-  });
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
 
-  // Upload Widget Configuration
-  const uwConfig = {
-    cloudName,
-    uploadPreset,
-    // Uncomment and modify as needed:
-    // cropping: true,
-    // showAdvancedOptions: true,
-    // sources: ['local', 'url'],
-    // multiple: false,
-    // folder: 'user_images',
-    // tags: ['users', 'profile'],
-    // context: { alt: 'user_uploaded' },
-    // clientAllowedFormats: ['images'],
-    // maxImageFileSize: 2000000,
-    // maxImageWidth: 2000,
-    // theme: 'purple',
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -69,8 +50,7 @@ export default function EventCreate() {
       }
 
       const { img } = await uploadImage({
-        image:
-          "https://i.pinimg.com/736x/ad/0d/7f/ad0d7f09d8d50ca8c6a5222a1844473e.jpg",
+        image: formData.imageFile,
       });
 
       await createEvent({
@@ -99,10 +79,14 @@ export default function EventCreate() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
+    const base64 = await convertBase64(file);
     if (file) {
-      setFormData((prev) => ({ ...prev, imageFile: file }));
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: base64,
+      }));
     }
   };
 
