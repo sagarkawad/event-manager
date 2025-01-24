@@ -1,7 +1,7 @@
 import { Event, Image } from "../types/database";
 
 //const PORT = import.meta.env.VITE_PORT;
-const API_URL = `https://event-manager-1-w8kj.onrender.com`;
+const API_URL = `https://event-manager-1-w8kj.onrender.com/api`;
 
 console.log(API_URL);
 console.log("hello");
