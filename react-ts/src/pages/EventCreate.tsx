@@ -45,7 +45,7 @@ export default function EventCreate() {
     try {
       if (formData.imageFile) {
         console.log("bs", new Blob([formData.imageFile]).size);
-        if (new Blob([formData.imageFile]).size > 1500000) {
+        if (new Blob([formData.imageFile]).size > 1000000) {
           throw new Error("File size too large.");
         }
         const formDataToUpload = new FormData();
